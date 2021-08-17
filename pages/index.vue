@@ -1,35 +1,41 @@
 <template>
   <div>
     <p>sounds</p>
-    <p @click="stopSound">stop sound</p>
-    <div>
-      <div
-        v-for="(sound, i) in audios"
-        :key="i"
-        :ref="sound.title"
-        @click="playSound(sound.src)"
-      >
-        <p>{{ sound.title }}</p>
-      </div>
-    </div>
-    <!-- <audio v-for="(val, prop) in audiosController" :key="prop" controls loop>
-      <source :src="val" type="audio/mp3" @click="play(val)" />
-      Your browser does not support the audio element.
-    </audio> -->
+    <section class="bg-blue-50">
+      <div class="max-w-screen-lg mx-auto">
+        <div class="container mx-auto">
+          <div class="grid grid-flow-col gap-4">
+            <div
+              v-for="(sound, i) in sounds"
+              :key="i"
+              class="cursor-pointer bg-red-50 relative"
+              @click="onSoundClick(sound)"
+            >
+              <div
+                :ref="sound.animation.ref"
+                class="animation-place w-32 h-32 absolute"
+              ></div>
 
-    <div class="anime__container">
-      <button @click="stop">stop</button>
-      <button @click="pause">pause</button>
-      <button @click="play">play</button>
-      <button style="width: 100px; height: 100px" @click="addAnimation">
-        add animation
-      </button>
-    </div>
+              <div class="w-32 h-32">
+                <transition name="fade">
+                  <img
+                    v-if="sound !== currentSound"
+                    class="w-32 h-32"
+                    src="~/assets/sound-image.png"
+                    alt="sound-image"
+                  />
+                </transition>
+              </div>
+              <p class="font-semibold">{{ sound.title }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
 
 <script>
-/* eslint-disable-next-line */
 import lottie from 'lottie-web'
 
 import animations from '~/assets/animations.js'
@@ -40,76 +46,76 @@ import smallOceanWaves from '~/assets/audio/small-ocean-waves.mp3'
 export default {
   data() {
     return {
+      anim: null,
       currentSound: null,
-      isPlaying: false,
-      // audiosController: {
-      //   ocean: require('@/assets/audio/ocean.mp3').default,
-      // },
-      audios: [
+
+      sounds: [
         {
+          animation: {
+            ref: 'heavyOceanWaves',
+            name: 'ocean',
+          },
           title: 'Heavy Ocean Waves',
-          src: new Audio(ocean),
+          audio: new Audio(ocean),
         },
         {
+          animation: {
+            ref: 'oceanWavesWithRain',
+            name: 'ocean',
+          },
           title: 'Ocean Waves With Rain',
-          src: new Audio(oceanWavesWithRain),
+          audio: new Audio(oceanWavesWithRain),
         },
         {
+          animation: {
+            ref: 'smallOceanWaves',
+            name: 'ocean',
+          },
           title: 'Small Ocean Waves',
-          src: new Audio(smallOceanWaves),
+          audio: new Audio(smallOceanWaves),
         },
       ],
     }
   },
-  beforeDestroy() {
-    this.currentSound.pause()
-  },
-  mounted() {
-    console.log(this.$refs)
-  },
 
   methods: {
-    async playSound(sound) {
-      try {
-        /* if there is a sound playing stop it first. */
-        if (this.currentSound) {
-          this.currentSound.pause()
-        }
-        this.currentSound = sound
-        this.isPlaying = true
-        this.currentSound.setAttribute('loop', 'true')
-        await this.currentSound.play()
-      } catch (error) {
-        console.log(error)
+    playSound(audio) {
+      audio.setAttribute('loop', 'true')
+      audio.play()
+    },
+
+    addAnimation(animation) {
+      /* add settime out for transition */
+      setTimeout(() => {
+        lottie.loadAnimation({
+          container: this.$refs[animation.ref][0],
+          renderer: 'svg',
+          // name: ref,
+          loop: true,
+          autoplay: true,
+          animationData: animations[animation.name],
+        })
+      }, 500)
+    },
+
+    removeAnimation() {
+      /* you can pass first attribute as name to destroy specific animation  */
+      lottie.destroy()
+    },
+
+    onSoundClick(sound) {
+      /* TODO when playing sound clicked stop it */
+      if (this.currentSound) {
+        /* pause previous sound */
+        this.currentSound.audio.pause()
+        /* destroy previous animation */
+        this.removeAnimation()
       }
-    },
-    stopSound() {
-      this.currentSound.pause()
-    },
 
-    /* animation handlers */
-    addAnimation(e) {
-      this.anim = lottie.loadAnimation({
-        container: e.target,
-        renderer: 'svg',
-        loop: true,
-        autoplay: true,
-        animationData: animations.playing,
-      })
+      this.currentSound = sound
+      this.playSound(sound.audio)
+      this.addAnimation(sound.animation)
     },
-    stop() {
-      this.anim.stop()
-    },
-
-    play() {
-      this.anim.play()
-    },
-
-    pause() {
-      this.anim.pause()
-    },
-
-    /* add animation programaticly */
   },
 }
 </script>
