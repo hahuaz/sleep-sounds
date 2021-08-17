@@ -1,9 +1,9 @@
 <template>
   <div>
     <p>sounds</p>
-    <p @click="pause">pause</p>
+    <p @click="pauseSound">pause</p>
     <div>
-      <div v-for="(sound, i) in audios" :key="i" @click="play(sound.src)">
+      <div v-for="(sound, i) in audios" :key="i" @click="playSound(sound.src)">
         <p>{{ sound.title }}</p>
       </div>
     </div>
@@ -11,10 +11,35 @@
       <source :src="val" type="audio/mp3" @click="play(val)" />
       Your browser does not support the audio element.
     </audio> -->
+
+    <div class="anime__container">
+      <lottie
+        :options="defaultOptions"
+        :height="400"
+        :width="400"
+        @animCreated="handleAnimation"
+      />
+      <div>
+        <p>Speed: x{{ animationSpeed }}</p>
+        <input
+          v-model="animationSpeed"
+          type="range"
+          value="1"
+          min="0"
+          max="3"
+          step="0.5"
+          @change="onSpeedChange"
+        />
+      </div>
+      <button @click="stop">stop</button>
+      <button @click="pause">pause</button>
+      <button @click="play">play</button>
+    </div>
   </div>
 </template>
 
 <script>
+import animations from '~/assets/animations.js'
 export default {
   data() {
     return {
@@ -41,6 +66,8 @@ export default {
           ),
         },
       ],
+      defaultOptions: { animationData: animations.animetion1 },
+      animationSpeed: 1,
     }
   },
   beforeDestroy() {
@@ -48,7 +75,7 @@ export default {
   },
 
   methods: {
-    async play(sound) {
+    async playSound(sound) {
       try {
         this.currentSound = sound
         this.currentSound.setAttribute('loop', 'true')
@@ -57,8 +84,29 @@ export default {
         console.log(error)
       }
     },
-    pause() {
+    pauseSound() {
       this.currentSound.pause()
+    },
+
+    /* animation handlers */
+    handleAnimation(anim) {
+      this.anim = anim
+    },
+
+    stop() {
+      this.anim.stop()
+    },
+
+    play() {
+      this.anim.play()
+    },
+
+    pause() {
+      this.anim.pause()
+    },
+
+    onSpeedChange() {
+      this.anim.setSpeed(this.animationSpeed)
     },
   },
 }
