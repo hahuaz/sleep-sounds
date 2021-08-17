@@ -4,7 +4,7 @@
     <section class="bg-blue-50">
       <div class="max-w-screen-lg mx-auto">
         <div class="container mx-auto">
-          <div class="grid grid-flow-col gap-4">
+          <div class="grid grid-flow-col justify-around gap-4">
             <div
               v-for="(sound, i) in sounds"
               :key="i"
@@ -30,6 +30,7 @@
             </div>
           </div>
         </div>
+        <!-- TODO add fire sounds. -->
       </div>
     </section>
   </div>
@@ -105,11 +106,14 @@ export default {
 
     onSoundClick(sound) {
       /* TODO when playing sound clicked stop it */
+
       if (this.currentSound) {
         /* pause previous sound */
         this.currentSound.audio.pause()
         /* destroy previous animation */
         this.removeAnimation()
+
+        if (this.currentSound === sound) return (this.currentSound = null)
       }
 
       this.currentSound = sound
