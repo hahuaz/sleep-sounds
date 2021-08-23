@@ -492,7 +492,7 @@ export default {
     ],
     markers: [],
   },
-  fire: {
+  campfire: {
     v: '5.7.1',
     fr: 25,
     ip: 0,

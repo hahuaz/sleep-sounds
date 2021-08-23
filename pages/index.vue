@@ -1,22 +1,29 @@
 <template>
   <div>
     <p>sounds</p>
-    <section class="bg-blue-50">
+    <section class="bg-gray-50">
       <div class="max-w-screen-lg mx-auto">
         <div class="container mx-auto">
-          <div class="grid grid-flow-col justify-around gap-4">
+          <div
+            class="
+              sounds__container
+              grid grid-cols-3
+              justify-items-center
+              gap-4
+            "
+          >
             <div
               v-for="(sound, i) in sounds"
               :key="i"
-              class="cursor-pointer bg-red-50 relative"
+              class="cursor-pointer relative grid justify-items-center"
               @click="onSoundClick(sound)"
             >
               <div
-                :ref="sound.animation.ref"
-                class="animation-place w-32 h-32 absolute"
+                :ref="sound.style.ref"
+                class="style-place w-32 h-32 absolute"
               ></div>
 
-              <div class="w-32 h-32">
+              <div class="h-32 w-32 rounded-full" :class="sound.style.name">
                 <transition name="fade">
                   <img
                     v-if="sound !== currentSound"
@@ -40,40 +47,69 @@
 import lottie from 'lottie-web'
 
 import animations from '~/assets/animations.js'
+
+/* mp3 sound files files */
 import ocean from '~/assets/audio/ocean.mp3'
-import oceanWavesWithRain from '~/assets/audio/ocean-waves-with-rain.mp3'
-import smallOceanWaves from '~/assets/audio/small-ocean-waves.mp3'
+import oceanRain from '~/assets/audio/ocean_rain.mp3'
+import oceanWaves from '~/assets/audio/ocean_waves.mp3'
+
+import campfire from '~/assets/audio/campfire.mp3'
+import campfireCracking from '~/assets/audio/campfire_cracking.mp3'
+import campfireFlaming from '~/assets/audio/campfire_flaming.mp3'
 
 export default {
   data() {
     return {
-      anim: null,
       currentSound: null,
 
       sounds: [
         {
-          animation: {
-            ref: 'heavyOceanWaves',
+          style: {
+            ref: 'ocean',
             name: 'ocean',
           },
           title: 'Heavy Ocean Waves',
           audio: new Audio(ocean),
         },
         {
-          animation: {
-            ref: 'oceanWavesWithRain',
+          style: {
+            ref: 'oceanRain',
             name: 'ocean',
           },
           title: 'Ocean Waves With Rain',
-          audio: new Audio(oceanWavesWithRain),
+          audio: new Audio(oceanRain),
         },
         {
-          animation: {
-            ref: 'smallOceanWaves',
+          style: {
+            ref: 'oceanWaves',
             name: 'ocean',
           },
           title: 'Small Ocean Waves',
-          audio: new Audio(smallOceanWaves),
+          audio: new Audio(oceanWaves),
+        },
+        {
+          style: {
+            ref: 'campfire',
+            name: 'campfire',
+          },
+          title: 'Campfire',
+          audio: new Audio(campfire),
+        },
+        {
+          style: {
+            ref: 'campfireCracking',
+            name: 'campfire',
+          },
+          title: 'Cracking Campfire',
+          audio: new Audio(campfireCracking),
+        },
+        {
+          style: {
+            ref: 'campfireFlaming',
+            name: 'campfire',
+          },
+          title: 'Flaming Campfire',
+          audio: new Audio(campfireFlaming),
         },
       ],
     }
@@ -81,20 +117,25 @@ export default {
 
   methods: {
     playSound(audio) {
-      audio.setAttribute('loop', 'true')
-      audio.play()
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          audio.setAttribute('loop', 'true')
+          audio.play()
+          resolve('sound played')
+        }, 500)
+      })
     },
 
-    addAnimation(animation) {
+    addAnimation(style) {
       /* add settime out for transition */
       setTimeout(() => {
         lottie.loadAnimation({
-          container: this.$refs[animation.ref][0],
+          container: this.$refs[style.ref][0],
           renderer: 'svg',
-          // name: ref,
+          // name: "anim-name",
           loop: true,
           autoplay: true,
-          animationData: animations[animation.name],
+          animationData: animations[style.name],
         })
       }, 500)
     },
@@ -113,13 +154,16 @@ export default {
         /* destroy previous animation */
         this.removeAnimation()
 
+        /* if playing sound clicked stop it */
         if (this.currentSound === sound) return (this.currentSound = null)
       }
 
       this.currentSound = sound
       this.playSound(sound.audio)
-      this.addAnimation(sound.animation)
+      this.addAnimation(sound.style)
     },
   },
 }
 </script>
+
+<style lang="scss" scoped></style>
