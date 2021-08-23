@@ -22,21 +22,22 @@
                 :ref="sound.style.ref"
                 class="
                   anim__container
-                  p-4
                   rounded-full
                   grid
                   justify-items-center
+                  align-items-center
                   h-48
                   w-48
                 "
                 :class="sound.style.name"
               >
-                <transition name="fade" mode="out-in">
+                <transition name="fade" class="relative">
                   <!-- TODO configure lottie to display anime bigger -->
                   <div v-if="sound === currentSound" class="anim__place"></div>
                   <img
                     v-else
                     src="~/assets/images/anim__placeholder.png"
+                    class="absolute h-32 w-32 top-[32px]"
                     alt="anim__placeholder"
                   />
                 </transition>
@@ -134,32 +135,34 @@ export default {
 
     addAnimation(style) {
       /* give vue time to update dom cause you're using refs vith v-if  */
-      setTimeout(() => {
-        lottie.loadAnimation({
-          container: this.$refs[style.ref][0].querySelector('.anim__place'),
-          renderer: 'svg',
-          // name: "anim-name",
-          loop: true,
-          autoplay: true,
-          animationData: animations[style.name],
-        })
-      }, 600)
+      // setTimeout(() => {
+      //   lottie.loadAnimation({
+      //     container: this.$refs[style.ref][0].querySelector('.anim__place'),
+      //     renderer: 'svg',
+      //     // name: "anim-name",
+      //     loop: true,
+      //     autoplay: true,
+      //     animationData: animations[style.name],
+      //   })
+      // }, 600)
 
-      /* TODO you use next-tick instead of settimout but you should remove transition cause app crashes with mode="out-in" */
-      // this.$nextTick(() => {
-      //   if (this.$refs[style.ref][0].querySelector('.anim__place')) {
-      //     lottie.loadAnimation({
-      //       container: this.$refs[style.ref][0].querySelector('.anim__place'),
-      //       renderer: 'svg',
-      //       // name: "anim-name",
-      //       loop: true,
-      //       autoplay: true,
-      //       animationData: animations[style.name],
-      //     })
-      //   } else {
-      //     this.addAnimation(style)
-      //   }
-      // })
+      /* TODO use next-tick instead of settimout but you should remove mode="out-in" transition cause app crashes when it's applied */
+      this.$nextTick(() => {
+        if (this.$refs[style.ref][0].querySelector('.anim__place')) {
+          setTimeout(() => {
+            lottie.loadAnimation({
+              container: this.$refs[style.ref][0].querySelector('.anim__place'),
+              renderer: 'svg',
+              // name: "anim-name",
+              loop: true,
+              autoplay: true,
+              animationData: animations[style.name],
+            })
+          }, 500)
+        } else {
+          this.addAnimation(style)
+        }
+      })
     },
 
     removeAnimation() {
