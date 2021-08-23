@@ -7,9 +7,9 @@
 }
 
 .campfire {
-  @apply bg-yellow-200;
+  @apply bg-yellow-100;
 }
 
 .ocean {
-  @apply bg-blue-200;
+  @apply bg-blue-100;
 }

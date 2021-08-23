@@ -1,53 +1,73 @@
 <template>
   <div>
-    <p>sounds</p>
-    <section class="bg-gray-50">
-      <div class="max-w-screen-lg mx-auto">
-        <div class="container mx-auto py-12">
-          <div
-            class="
-              sounds__container
-              grid grid-cols-3
-              justify-items-center
-              gap-12
-            "
-          >
+    <div class="bg-gray-50 min-h-screen py-12">
+      <h1 class="text-center text-5xl py-6 font-semibold font-mono">
+        Better Sleeps Better Lifes
+      </h1>
+      <section>
+        <div class="max-w-screen-lg mx-auto">
+          <div class="container mx-auto py-12">
             <div
-              v-for="(sound, i) in sounds"
-              :key="i"
-              class="cursor-pointer relative grid justify-items-center"
-              @click="onSoundClick(sound)"
+              class="
+                sounds__container
+                grid
+                sm:grid-cols-2
+                lg:grid-cols-3
+                justify-items-center
+                gap-12
+              "
             >
               <div
-                :ref="sound.style.ref"
+                v-for="(sound, i) in sounds"
+                :key="i"
                 class="
-                  anim__container
-                  rounded-full
+                  cursor-pointer
+                  relative
                   grid
                   justify-items-center
-                  align-items-center
-                  h-48
-                  w-48
+                  bg-white
+                  px-12
+                  py-6
+                  rounded-lg
+                  shadow-lg
                 "
-                :class="sound.style.name"
+                @click="onSoundClick(sound)"
               >
-                <transition name="fade" class="relative">
-                  <!-- TODO configure lottie to display anime bigger -->
-                  <div v-if="sound === currentSound" class="anim__place"></div>
-                  <img
-                    v-else
-                    src="~/assets/images/anim__placeholder.png"
-                    class="absolute h-32 w-32 top-[32px]"
-                    alt="anim__placeholder"
-                  />
-                </transition>
+                <div
+                  :ref="sound.style.ref"
+                  class="
+                    anim__container
+                    rounded-full
+                    grid
+                    justify-items-center
+                    align-items-center
+                    h-48
+                    w-48
+                    relative
+                  "
+                  :class="sound.style.name"
+                >
+                  <transition name="fade" class="relative">
+                    <!-- TODO configure lottie to display anime bigger -->
+                    <div
+                      v-if="sound === currentSound"
+                      class="anim__place"
+                    ></div>
+                    <img
+                      v-else
+                      src="~/assets/images/anim_placeholder.png"
+                      class="absolute h-32 w-32 top-[32px]"
+                      alt="anim__placeholder"
+                    />
+                  </transition>
+                </div>
+                <p class="font-semibold mt-4">{{ sound.title }}</p>
               </div>
-              <p class="font-semibold mt-4">{{ sound.title }}</p>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
   </div>
 </template>
 
@@ -56,14 +76,14 @@ import lottie from 'lottie-web'
 
 import animations from '~/assets/animations.js'
 
-/* mp3 sound files files */
-import ocean from '~/assets/audio/ocean.mp3'
-import oceanRain from '~/assets/audio/ocean_rain.mp3'
-import oceanWaves from '~/assets/audio/ocean_waves.mp3'
-
-import campfire from '~/assets/audio/campfire.mp3'
-import campfireCracking from '~/assets/audio/campfire_cracking.mp3'
-import campfireFlaming from '~/assets/audio/campfire_flaming.mp3'
+import {
+  ocean,
+  oceanRain,
+  oceanWaves,
+  campfire,
+  campfireCracking,
+  campfireFlaming,
+} from '~/assets/audio/index'
 
 export default {
   data() {
@@ -121,6 +141,9 @@ export default {
         },
       ],
     }
+  },
+  beforeDestroy() {
+    // this.currentSound.audio.stop()
   },
 
   methods: {
