@@ -3,13 +3,13 @@
     <p>sounds</p>
     <section class="bg-gray-50">
       <div class="max-w-screen-lg mx-auto">
-        <div class="container mx-auto">
+        <div class="container mx-auto py-12">
           <div
             class="
               sounds__container
               grid grid-cols-3
               justify-items-center
-              gap-4
+              gap-12
             "
           >
             <div
@@ -20,24 +20,31 @@
             >
               <div
                 :ref="sound.style.ref"
-                class="style-place w-32 h-32 absolute"
-              ></div>
-
-              <div class="h-32 w-32 rounded-full" :class="sound.style.name">
-                <transition name="fade">
+                class="
+                  anim__container
+                  p-4
+                  rounded-full
+                  grid
+                  justify-items-center
+                  h-48
+                  w-48
+                "
+                :class="sound.style.name"
+              >
+                <transition name="fade" mode="out-in">
+                  <!-- TODO configure lottie to display anime bigger -->
+                  <div v-if="sound === currentSound" class="anim__place"></div>
                   <img
-                    v-if="sound !== currentSound"
-                    class="w-32 h-32"
-                    src="~/assets/sound-image.png"
-                    alt="sound-image"
+                    v-else
+                    src="~/assets/images/anim__placeholder.png"
+                    alt="anim__placeholder"
                   />
                 </transition>
               </div>
-              <p class="font-semibold">{{ sound.title }}</p>
+              <p class="font-semibold mt-4">{{ sound.title }}</p>
             </div>
           </div>
         </div>
-        <!-- TODO add fire sounds. -->
       </div>
     </section>
   </div>
@@ -116,28 +123,43 @@ export default {
   },
 
   methods: {
+    /* settime out's for fade animetion on  */
+
     playSound(audio) {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          audio.setAttribute('loop', 'true')
-          audio.play()
-          resolve('sound played')
-        }, 500)
-      })
+      setTimeout(() => {
+        audio.setAttribute('loop', 'true')
+        audio.play()
+      }, 500)
     },
 
     addAnimation(style) {
-      /* add settime out for transition */
+      /* give vue time to update dom cause you're using refs vith v-if  */
       setTimeout(() => {
         lottie.loadAnimation({
-          container: this.$refs[style.ref][0],
+          container: this.$refs[style.ref][0].querySelector('.anim__place'),
           renderer: 'svg',
           // name: "anim-name",
           loop: true,
           autoplay: true,
           animationData: animations[style.name],
         })
-      }, 500)
+      }, 600)
+
+      /* TODO you use next-tick instead of settimout but you should remove transition cause app crashes with mode="out-in" */
+      // this.$nextTick(() => {
+      //   if (this.$refs[style.ref][0].querySelector('.anim__place')) {
+      //     lottie.loadAnimation({
+      //       container: this.$refs[style.ref][0].querySelector('.anim__place'),
+      //       renderer: 'svg',
+      //       // name: "anim-name",
+      //       loop: true,
+      //       autoplay: true,
+      //       animationData: animations[style.name],
+      //     })
+      //   } else {
+      //     this.addAnimation(style)
+      //   }
+      // })
     },
 
     removeAnimation() {
@@ -146,8 +168,6 @@ export default {
     },
 
     onSoundClick(sound) {
-      /* TODO when playing sound clicked stop it */
-
       if (this.currentSound) {
         /* pause previous sound */
         this.currentSound.audio.pause()
